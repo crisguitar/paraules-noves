@@ -16,7 +16,7 @@ func (r RequestHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	result, err := r.Handler.Handle(w, req)
 
 	if err != nil {
-		http.Error(w, err.Error(), 500)
+		writeError(w, err)
 		return
 	}
 
@@ -38,10 +38,18 @@ type Handler interface {
 	Handle(w http.ResponseWriter, r *http.Request) (interface{}, error)
 }
 
-type ApiError struct {
-	Message string
-}
+func writeError(w http.ResponseWriter, err error) {
+	var errorInBytes []byte
+	if appError, isAppError := err.(AppError); isAppError {
+		w.WriteHeader(appError.HttpCode)
+		errorInBytes, _ = json.Marshal(appError)
+	} else {
+		w.WriteHeader(500)
+		errorInBytes, _ = json.Marshal(AppError{
+			HttpCode: 500,
+			Message:  err.Error(),
+		})
+	}
 
-func (e ApiError) Error() string {
-	return e.Message
+	w.Write(errorInBytes)
 }

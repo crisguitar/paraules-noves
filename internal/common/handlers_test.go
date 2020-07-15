@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/crisguitar/paraules-noves/internal/common"
 	"github.com/stretchr/testify/assert"
+	"go/scanner"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +15,7 @@ type FakeSuccessHandler struct {
 	Result interface{}
 }
 type FakeErrorHandler struct {
-	Message string
+	Error error
 }
 
 func (h FakeSuccessHandler) Handle(_ http.ResponseWriter, _ *http.Request) (interface{}, error) {
@@ -22,9 +23,7 @@ func (h FakeSuccessHandler) Handle(_ http.ResponseWriter, _ *http.Request) (inte
 }
 
 func (h FakeErrorHandler) Handle(_ http.ResponseWriter, _ *http.Request) (interface{}, error) {
-	return nil, common.ApiError{
-		Message: h.Message,
-	}
+	return nil, h.Error
 }
 
 func TestRequestHandler_ServeHTTP_setsJsonHeader(t *testing.T) {
@@ -63,11 +62,40 @@ func TestRequestHandler_ServeHTTP_whenHandlerFailsReturnError(t *testing.T) {
 	request, _ := http.NewRequest("GET", "/does-not-matter", nil)
 	handler := common.RequestHandler{
 		Handler: FakeErrorHandler{
-			Message: "sad error",
+			Error: common.AppError{
+				HttpCode: 400,
+				Message:  "sad error",
+			},
 		},
 	}
 
 	handler.ServeHTTP(writer, request)
 
+	response := make(map[string]string)
+	bytes, _ := ioutil.ReadAll(writer.Body)
+	json.Unmarshal(bytes, &response)
+
+	assert.Equal(t, 400, writer.Code)
+	assert.Equal(t, "sad error", response["error"])
+}
+
+func TestRequestHandler_ServeHTTP_whenHandlerFailsWithUnknownErrorReturnError(t *testing.T) {
+	writer := httptest.NewRecorder()
+	request, _ := http.NewRequest("GET", "/does-not-matter", nil)
+	handler := common.RequestHandler{
+		Handler: FakeErrorHandler{
+			Error: scanner.Error{
+				Msg: "some other error",
+			},
+		},
+	}
+
+	handler.ServeHTTP(writer, request)
+
+	response := make(map[string]string)
+	bytes, _ := ioutil.ReadAll(writer.Body)
+	json.Unmarshal(bytes, &response)
+
 	assert.Equal(t, 500, writer.Code)
+	assert.Equal(t, "some other error", response["error"])
 }
