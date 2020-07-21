@@ -15,7 +15,7 @@ func (h CreateWordHandler) Handle(w http.ResponseWriter, req *http.Request) (int
 	b, _ := ioutil.ReadAll(req.Body)
 	newEntry := Entry{}
 	err := json.Unmarshal(b, &newEntry)
-	if err != nil {
+	if err != nil || !newEntry.IsValid() {
 		return nil, common.AppError{Message: "Wrong body", HttpCode: 400}
 	}
 	h.Repository.Save(newEntry)

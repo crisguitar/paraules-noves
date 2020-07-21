@@ -54,6 +54,22 @@ func TestCreateWordHandler_Handle_ShouldReturnErrorWithBadBody(t *testing.T) {
 	assert.Equal(t, "Wrong body", response["error"])
 }
 
+func TestCreateWordHandler_Handle_ShouldReturnErrorWhenInvalid(t *testing.T) {
+	repo := new(mocks.FakeRepository)
+	requestBody := map[string]string{}
+	request, writer := prepareRequest(requestBody)
+
+	words.NewCreateWordHandler(repo).ServeHTTP(writer, request)
+
+	response := make(map[string]string)
+	body, _ := ioutil.ReadAll(writer.Body)
+	json.Unmarshal(body, &response)
+
+	code := writer.Code
+	assert.Equal(t, 400, code)
+	assert.Equal(t, "Wrong body", response["error"])
+}
+
 func prepareRequest(requestBody interface{}) (*http.Request, *httptest.ResponseRecorder) {
 	serialised, _ := json.Marshal(requestBody)
 	request, _ := http.NewRequest("POST", "/words", bytes.NewReader(serialised))
