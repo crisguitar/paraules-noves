@@ -1,6 +1,7 @@
 package infrastructure
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -15,7 +16,30 @@ type DbConfig struct {
 	Port     int
 }
 
-func CreateDB(dbConfig DbConfig) (*sqlx.DB, error) {
+type DB interface {
+	NamedExec(string, interface{}) (sql.Result, error)
+	Select(interface{}, string) error
+}
+
+type myDB struct {
+	sqlxDb *sqlx.DB
+}
+
+func (db *myDB) Select(dest interface{}, query string) error {
+	return db.sqlxDb.Select(dest, query)
+}
+
+func (db *myDB) NamedExec(query string, arg interface{}) (sql.Result, error) {
+	return db.sqlxDb.NamedExec(query, arg)
+}
+
+func NewDB(sqlxDb *sqlx.DB) DB {
+	return &myDB{
+		sqlxDb: sqlxDb,
+	}
+}
+
+func CreateDB(dbConfig DbConfig) (DB, error) {
 	dataSourceString := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=disable",
 		dbConfig.User,
 		dbConfig.Password,
@@ -32,5 +56,5 @@ func CreateDB(dbConfig DbConfig) (*sqlx.DB, error) {
 		log.Printf("Ping failed, %s", pingError)
 	}
 
-	return db, nil
+	return NewDB(db), nil
 }

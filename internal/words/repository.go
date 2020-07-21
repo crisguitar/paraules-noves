@@ -1,16 +1,16 @@
 package words
 
 import (
-	"github.com/crisguitar/paraules-noves/internal/common"
-	"github.com/crisguitar/paraules-noves/internal/words/infrastructure"
+	"github.com/crisguitar/paraules-noves/internal/infrastructure"
 )
 
 type Repository interface {
 	Save(entry Entry) error
+	GetAll() (entries []Entry, err error)
 }
 
 type PgRepository struct {
-	Db common.DB
+	Db infrastructure.DB
 }
 
 func (repo PgRepository) Save(entry Entry) error {
@@ -19,6 +19,16 @@ func (repo PgRepository) Save(entry Entry) error {
 		return err
 	}
 	return nil
+}
+
+func (repo PgRepository) GetAll() ([]Entry, error) {
+	entries := []Entry{}
+	query := "SELECT * FROM words"
+	if err := repo.Db.Select(&entries, query); err != nil {
+		return nil, err
+	}
+
+	return entries, nil
 }
 
 func NewRepository(config infrastructure.DbConfig) Repository {

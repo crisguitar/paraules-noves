@@ -30,3 +30,23 @@ func NewCreateWordHandler(repo Repository) http.Handler {
 		},
 	}
 }
+
+type GetAllWordsHandler struct {
+	Repository Repository
+}
+
+func (h GetAllWordsHandler) Handle(_ http.ResponseWriter, _ *http.Request) (interface{}, error) {
+	allEntries, err := h.Repository.GetAll()
+	if err != nil {
+		return nil, err
+	}
+	return allEntries, nil
+}
+
+func NewGetAllWordsHandler(repo Repository) http.Handler {
+	return common.RequestHandler{
+		Handler: GetAllWordsHandler{
+			Repository: repo,
+		},
+	}
+}

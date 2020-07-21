@@ -1,8 +1,8 @@
 package api
 
 import (
+	"github.com/crisguitar/paraules-noves/internal/infrastructure"
 	"github.com/crisguitar/paraules-noves/internal/words"
-	"github.com/crisguitar/paraules-noves/internal/words/infrastructure"
 	"github.com/go-chi/chi"
 	"os"
 	"strconv"
@@ -14,6 +14,8 @@ func NewRouter() *chi.Mux {
 
 	r := chi.NewRouter()
 	r.Method("POST", "/words", words.NewCreateWordHandler(wordsRepository))
+	r.Method("GET", "/words", words.NewGetAllWordsHandler(wordsRepository))
+
 	return r
 }
 

@@ -1,6 +1,7 @@
 package words
 
 type Entry struct {
+	Id      int    `db:"id"`
 	Word    string `db:"word"`
 	Meaning string `db:"meaning"`
 }
