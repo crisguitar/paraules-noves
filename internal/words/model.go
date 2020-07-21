@@ -1,6 +1,6 @@
 package words
 
 type Entry struct {
-	Word string
-	Meaning string
+	Word    string `db:"word"`
+	Meaning string `db:"meaning"`
 }
