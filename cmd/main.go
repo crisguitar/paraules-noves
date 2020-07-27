@@ -10,7 +10,7 @@ import (
 func main() {
 	r := api.NewRouter()
 	port, found := os.LookupEnv("PORT")
-	if !found {
+	if !found || port == "" {
 		port = "8000"
 	}
 	fmt.Printf("Starting app in port %s \n", port)

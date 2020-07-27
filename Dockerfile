@@ -8,4 +8,4 @@ RUN go get -v -t -d ./...
 COPY . .
 RUN make build
 
-CMD ["./build/app"]
+CMD PORT=$PORT ./build/app
