@@ -16,3 +16,6 @@
 
 # Build
 build
+
+# FE
+node_modules

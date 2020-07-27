@@ -1,5 +1,18 @@
 version: "3.1"
 services:
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DB_USER: foobar
+      DB_PASSWORD: foobar
+      DB_NAME: foobar
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+    - "8000:8000"
+
   db:
     image: postgres:12-alpine
     restart: always

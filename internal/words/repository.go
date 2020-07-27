@@ -23,7 +23,7 @@ func (repo PgRepository) Save(entry Entry) error {
 
 func (repo PgRepository) GetAll() ([]Entry, error) {
 	entries := []Entry{}
-	query := "SELECT * FROM words"
+	query := "SELECT * FROM words order by id desc"
 	if err := repo.Db.Select(&entries, query); err != nil {
 		return nil, err
 	}

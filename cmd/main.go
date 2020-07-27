@@ -11,7 +11,7 @@ func main() {
 	r := api.NewRouter()
 	port, found := os.LookupEnv("PORT")
 	if !found {
-		port = "3000"
+		port = "8000"
 	}
 	fmt.Printf("Starting app in port %s \n", port)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", port), r); err != nil {

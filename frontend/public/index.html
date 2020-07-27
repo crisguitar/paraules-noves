@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paraules noves</title>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+<body>
+<template id="word-card">
+  <article class="media">
+    <div class="media-content">
+      <div class="content">
+        <strong>
+          <slot name="word">{ word }</slot>
+        </strong>
+        <p>
+          <slot name="meaning">{ meaning }</slot>
+        </p>
+      </div>
+    </div>
+  </article>
+</template>
+<section class="section">
+  <div id="practice" class="container">
+    <word-card class="box">
+      <span slot="word">some word</span>
+      <span slot="meaning">some meaning</span>
+    </word-card>
+  </div>
+  <div id="new-word" class="container">
+    <div class="columns">
+      <div class="column">
+        <word-form></word-form>
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+</html>
