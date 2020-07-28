@@ -19,3 +19,4 @@ build
 
 # FE
 node_modules
+frontend/dist
