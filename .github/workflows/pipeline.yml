@@ -26,7 +26,7 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
-    - name: BE dependencies
+    - name: BE Dependencies
       run: make deps
 
     - name: BE Build
@@ -34,6 +34,9 @@ jobs:
 
     - name: BE Test
       run: make test
+
+    - name: FE Dependencies
+      run: cd frontend && yarn
 
     - name: FE Build
       run: cd frontend && yarn build
