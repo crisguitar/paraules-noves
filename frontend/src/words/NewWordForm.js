@@ -43,7 +43,7 @@ class NewWordForm extends HTMLElement {
         </div>
         <div class="field is-grouped">
           <div class="control">
-            <button type="submit" class="button is-link has-background-primary">Submit</button>
+            <button type="submit" class="button is-link has-background-primary">Desa</button>
           </div>
         </div>
       </form>
