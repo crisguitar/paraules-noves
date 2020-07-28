@@ -29,12 +29,33 @@ jobs:
       run: make build
 
     - name: Test
-      run: make test
+      run: make test 
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    
+    - name: Setup Node.js environment
+      uses: actions/setup-node@v2.1.1
 
-    - name: Deploy
+    - name: Deploy backend
       uses: akhileshns/heroku-deploy@v3.0.5
       with:
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
         heroku_app_name: paraules-noves
         heroku_email: ${{ secrets.HEROKU_EMAIL }}
         usedocker: true
+        
+    - name: Generate static files
+      run: cd frontend && yarn build
+        
+    - name: Deploy frontend
+      uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: 'eu-west-1'   # optional: defaults to us-east-1
+        SOURCE_DIR: 'frontend/dist'      # optional: defaults to entire repository:
